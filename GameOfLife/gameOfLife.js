@@ -12,9 +12,13 @@ let turn2 = false;
 let cols;
 let rows;
 let boxLength = 10;
+var runs = false;
 
 function setup() {
+    
     createCanvas(400,400);
+    var go = createButton("start");
+    go.mousePressed(startstop);
     rows = height/boxLength;
     cols = width/boxLength;
     grid1 = make2DArray(cols + 2, rows + 2);
@@ -30,6 +34,19 @@ function setup() {
         }
     }
     console.table(grid1);
+}
+
+function mousePressed() {
+    var i = ceil(mouseX / boxLength);
+    var j = ceil(mouseY / boxLength)
+    if (!runs && i < grid1.length && j < grid1[1].length){
+        grid1[i][j] = (grid1[i][j] + 1) % 2;
+        grid2[i][j] = (grid2[i][j] + 1) % 2;
+    }
+}
+
+function startstop() {
+    runs = !runs;
 }
 
 function draw() {
@@ -53,8 +70,10 @@ function draw() {
             }
         }
     }
-    nextGrid();
-    turn2 = !turn2;
+    if (runs) {
+        nextGrid();
+        turn2 = !turn2;
+    }
 }
 
 function nextGrid() {
