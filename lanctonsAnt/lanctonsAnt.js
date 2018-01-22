@@ -89,7 +89,6 @@ function draw() {
         }
         text("Steps: "+steps, 120, height - 10)
     }
-    
 }
 
 function antStep() {
