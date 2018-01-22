@@ -16,7 +16,7 @@ var diry;
 let boxLength = 40;
 var runs = false;
 var steps;
-var instructions = [0, 0, 1,1, 1,0,1,1,1,0,0,0]
+var instructions = [0, 1]
 
 function setup() {
     
@@ -77,14 +77,14 @@ function draw() {
         for (var k = 0; k < instructions.length; k++) {
             i = k % 6
             // todo: when more than 6 make more than one row of exampletiles
-            //t = ceil(instructions.length / 6) - floor(k/6)
-            fill(255 * i/(instructions.length - 1));
-            rect(300 + i * 50, height - 50 ,50, 50);
-            fill(255 * (1-floor(2*i/(instructions.length-1))));
-            if (instructions[i]) {
-                text("L", 315 + i * 50, height - 10);
+            t = ceil(instructions.length / 6) - floor(k/6) - 1;
+            fill(255 * k/(instructions.length - 1));
+            rect(300 + i * 50, height - 50 - t *50 ,50, 50);
+            fill(255 * (1-floor(2*k/(instructions.length-1))));
+            if (instructions[k]) {
+                text("L", 315 + i * 50, height - 10 - t *50);
             } else {
-                text("R", 315 + i * 50, height - 10);
+                text("R", 315 + i * 50, height - 10 - t *50);
             }
         }
         text("Steps: "+steps, 120, height - 10)
@@ -105,7 +105,7 @@ function antStep() {
 function go(direction) {
     // direction 1 for right 0 for left
     var temp = dirx;
-    if (direction) {
+    if (!direction) {
         dirx = -diry;
         diry = temp;
     } else {
