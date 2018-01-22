@@ -17,8 +17,8 @@ function setup() {
 
 function draw() {
     background(255);
-    rotateX(slider1.value());
-    rotateY(slider2.value());
+    rotateX(-slider2.value());
+    rotateY(slider1.value());
     box(200);
     box(50);
 }
