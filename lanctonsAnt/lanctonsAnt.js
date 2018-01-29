@@ -16,7 +16,7 @@ var diry;
 let boxLength = 40;
 var runs = false;
 var steps;
-var instructions = [0, 1]
+var instructions = [0, 1,1,1,0]
 
 function setup() {
     
