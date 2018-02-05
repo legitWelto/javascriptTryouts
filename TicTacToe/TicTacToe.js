@@ -1,8 +1,17 @@
+// Copyright Welto
+// programm initialises tornament in which NN will battle
+// Task seems to complicated. after some iterations NN are to similare and do all the same moves so evryone wins exatly the games he started or 
+// did go secound because the other does a nonvalid move. Maybe there shoudle be a training for cross and one for circle
+
 var showbox;
 var tournament;
 var count;
 var but;
+var but2;
+var but3;
 var runs;
+var gam;
+
 
 function setup(){
     createCanvas(650,450);
@@ -12,20 +21,53 @@ function setup(){
     but = createButton("nächste Runde");
     but.position(0,450);
     but.mousePressed(next);
+    but2 = createButton("Test");
+    but2.position(200,450);
+    but2.mousePressed(test);
+    but3 = createButton("evaluate");
+    but3.position(300,450);
+    but3.mousePressed(eva);
     count = 0;
     runs = false;
 }
+
 function next(){
     runs = !runs;
+    test = false;
+}
+
+function test(){
+    test = true;
+    showbox = 400;
+    gam = new TicTacToe;
+}
+
+function eva(){
+    if (test && !runs){
+        gam.move(tournament.players[0].pass(gam.board),'circle');
+    }
+}
+
+function mousePressed() {
+    if (test && !runs) {
+        var i = floor(3*mouseX / showbox);
+        var j = floor(3*mouseY / showbox);
+        gam.board[3*i+j] = ((gam.board[3*i+j] + 2) % 3) - 1;
+        background(255);
+        gam.show(0,0);
+    }
 }
 
 function draw(){
-    if (runs) tournament.roundrobin();
+    if (runs){
+        showbox =200;
+        tournament.roundrobin();
+    }
 }
 
 class Tournament {
     constructor() {
-        this.players = new Array(600);
+        this.players = new Array(300);
         for (var i = 0; i < this.players.length; i++) {
             this.players[i] = new NeuralNet(3);
             this.players[i].randomize();
@@ -43,12 +85,13 @@ class Tournament {
         text("player #2: " + this.players[2].score, 400, 200);
         for (var i = 0; i < this.players.length/6; i++) {
             // todo change param with score
-            newPlayers[6*i] = this.players[i].mutate(1,0.25);
+            newPlayers[6*i] = this.players[i].mutate(0,0);
             newPlayers[6*i+1] = this.players[i].mutate(0.5,0.5);
-            newPlayers[6*i+2] = this.players[i].mutate(0.25,0.5);
-            newPlayers[6*i+3] = this.players[i].mutate(1,0.25);
-            newPlayers[6*i+4] = this.players[i].mutate(0.5,0.5);
-            newPlayers[6*i+5] = this.players[i].mutate(0.25,0.5);
+            newPlayers[6*i+2] = this.players[i].mutate(0.7,0.25);
+            newPlayers[6*i+3] = this.players[i].mutate(0.25,0.25);
+            newPlayers[6*i+4] = this.players[i].mutate(0.1,0.1);
+            newPlayers[6*i+5] = this.players[i].mutate(1,1);
+            newPlayers[6*i+5].randomize();
         }
         this.players = newPlayers;
     }
@@ -94,7 +137,7 @@ class Tournament {
 
     getScore() {
         var turn,miss,game;
-        var misspen = 0;
+        var misspen = 2;
         for (var i = 0; i < this.players.length; i++) {
             for (var j = 0; j < i; j++) {
                 turn = true;
@@ -183,7 +226,7 @@ class NeuralNet {
 
     mutate(many , much) {
         // many = 1 means all random many= 0 none
-        // much = 1 completely new entry much =0 sam entry as before
+        // much = 1 completely new entry much =0 same entry as before
         var newNet = new NeuralNet(this.matrix.length);
         for (var i = 0; i < this.matrix.length; i++) {
             for (var j = 0; j < 9; j++) {
