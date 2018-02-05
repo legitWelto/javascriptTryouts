@@ -1,14 +1,23 @@
 var showbox;
-var ti;
+var tournament;
+var count;
+var but;
 
 function setup(){
     createCanvas(400,450);
-    showbox = 400;
+    showbox = 200;
     textSize(32);
+    tournament = new Tournament();
+    but = createButton("nächste Runde");
+    but.position(0,450);
+    but.mousePressed(next);
+    count = 0;
+}
+function next(){
+    tournament.roundrobin();
 }
 
-function draw(){
-}
+function draw(){}
 
 class Tournament {
     constructor() {
@@ -20,8 +29,8 @@ class Tournament {
     }
     
     roundrobin(){
-        drawTopMatches();
-        getScore();
+        this.drawTopMatches();
+        this.getScore();
         this.players.sort(this.compare);
         var newPlayers = new Array(this.players.length);
         for (var i = 0; i < this.players.length/3; i++) {
@@ -35,11 +44,12 @@ class Tournament {
 
     drawTopMatches(){
         background(255);
-        var k,l;
+        text("Round #" + count++, 0, 400);
+        var k,l,game,turn;
         for (var i = 1; i < 3; i++) {
             for (var j = 0; j < 2; j++) {
-                var turn = true;
-                var game = new TicTacToe();
+                turn = true;
+                game = new TicTacToe();
                 if (j==0){
                     k=0;
                     l=i;
@@ -47,7 +57,7 @@ class Tournament {
                     k= i;
                     l = 0;
                 }
-                while (game.state == 'ongoing'){
+                while (game.state == 'ongoing') {
                     if (turn) {
                         game.move(this.players[k].pass(game.board),'circle');
                     } else {
@@ -147,14 +157,15 @@ class NeuralNet {
             for (var j = 0; j < 9; j++) {
                 for (var k = 0; k < 10; k++) {
                 this.matrix[i][j][k] = Math.random()*2-1;
+                }
             }
         }
     }
 
-    mutate(many,much){
+    mutate(many , much) {
         // many = 1 means all random many= 0 none
         // much = 1 completely new entry much =0 sam entry as before
-        var newNet = new NeuralNet(matrix.length);
+        var newNet = new NeuralNet(this.matrix.length);
         for (var i = 0; i < this.matrix.length; i++) {
             for (var j = 0; j < 9; j++) {
                 for (var k = 0; k < 10; k++) {
@@ -176,13 +187,14 @@ class NeuralNet {
                 // const factor
                 tempNodes[j] = this.matrix[i][j][9];
                 for (var k = 0; k < 9; k++) {
-                    tempNodes[j] += newNet.matrix[i][j][k]*board[k];
+                    tempNodes[j] += this.matrix[i][j][k]*board[k];
                 }
             }
             for (var j = 0; j < 9; j++) {
                 // activation
-                board[j] = (tempNodes[j] > 0) ? tempNodes[j] : 0;
+                tempNodes[j] = (tempNodes[j] > 0) ? tempNodes[j] : 0;
             }
+            board = tempNodes;
         }
         //get pos with maximum
         var pos = 0;
@@ -304,6 +316,7 @@ class TicTacToe {
                 return true;
         }
         this.state = 'ongoing';
+        
         return true;
     }
 }
