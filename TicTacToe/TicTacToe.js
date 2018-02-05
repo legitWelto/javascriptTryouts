@@ -2,9 +2,10 @@ var showbox;
 var tournament;
 var count;
 var but;
+var runs;
 
 function setup(){
-    createCanvas(400,450);
+    createCanvas(650,450);
     showbox = 200;
     textSize(32);
     tournament = new Tournament();
@@ -12,16 +13,19 @@ function setup(){
     but.position(0,450);
     but.mousePressed(next);
     count = 0;
+    runs = false;
 }
 function next(){
-    tournament.roundrobin();
+    runs = !runs;
 }
 
-function draw(){}
+function draw(){
+    if (runs) tournament.roundrobin();
+}
 
 class Tournament {
     constructor() {
-        this.players = new Array(6);
+        this.players = new Array(600);
         for (var i = 0; i < this.players.length; i++) {
             this.players[i] = new NeuralNet(3);
             this.players[i].randomize();
@@ -33,18 +37,24 @@ class Tournament {
         this.getScore();
         this.players.sort(this.compare);
         var newPlayers = new Array(this.players.length);
-        for (var i = 0; i < this.players.length/3; i++) {
+        text("Score",400, 50)
+        text("player #0: " + this.players[0].score, 400, 100);
+        text("player #1: " +this.players[1].score, 400, 150);
+        text("player #2: " + this.players[2].score, 400, 200);
+        for (var i = 0; i < this.players.length/6; i++) {
             // todo change param with score
-            newPlayers[3*i] = this.players[i].mutate(0.1,0.1);
-            newPlayers[3*i+1] = this.players[i].mutate(0.25,0.25);
-            newPlayers[3*i+2] = this.players[i].mutate(0.1,0.5);
+            newPlayers[6*i] = this.players[i].mutate(1,0.25);
+            newPlayers[6*i+1] = this.players[i].mutate(0.5,0.5);
+            newPlayers[6*i+2] = this.players[i].mutate(0.25,0.5);
+            newPlayers[6*i+3] = this.players[i].mutate(1,0.25);
+            newPlayers[6*i+4] = this.players[i].mutate(0.5,0.5);
+            newPlayers[6*i+5] = this.players[i].mutate(0.25,0.5);
         }
         this.players = newPlayers;
     }
 
     drawTopMatches(){
         background(255);
-        text("Round #" + count++, 0, 400);
         var k,l,game,turn;
         for (var i = 1; i < 3; i++) {
             for (var j = 0; j < 2; j++) {
@@ -65,32 +75,35 @@ class Tournament {
                     }
                     turn = !turn;
                 }
-                game.show((i-1)*showbox,j*showbox);
-                switch(game.state){
+                game.show((i-1)*(showbox+5),j*(showbox+5));
+                switch (game.state){
                     case 'draw':
-                        text("Draw");
+                        text("Draw",(i-1)*showbox,j*showbox+showbox*0.5);
                         break;
                     case 'circle':
-                        text("Player "+ k +" won");
+                        text("Player "+ k +" won",(i-1)*showbox,j*showbox+showbox*0.5);
                         break;
                     case 'cross':
-                        text("Player "+ l +" won");
+                        text("Player "+ l +" won", (i-1)*showbox,j*showbox+showbox*0.5);
                         break;
                 }
             }
         }
+        text("Round #" + ++count, 0, 425);
     }
 
     getScore() {
+        var turn,miss,game;
+        var misspen = 0;
         for (var i = 0; i < this.players.length; i++) {
             for (var j = 0; j < i; j++) {
-                var turn = true;
-                var game = new TicTacToe();
+                turn = true;
+                game = new TicTacToe();
                 while (game.state == 'ongoing'){
                     if (turn) {
-                        game.move(this.players[i].pass(game.board),'circle');
+                        miss = game.move(this.players[i].pass(game.board),'circle');
                     } else {
-                        game.move(this.players[j].pass(game.board),'cross');
+                        miss = game.move(this.players[j].pass(game.board),'cross');
                     }
                     turn = !turn;
                 }
@@ -101,15 +114,19 @@ class Tournament {
                         break;
                     case 'circle':
                         this.players[i].score++;
+                        // hitting already used field
+                        if (!miss) this.players[j].score-=misspen;
                         break;
                     case 'cross':
                         this.players[j].score++;
+                        // hitting already used field
+                        if (!miss) this.players[i].score-=misspen;
                         break;
                 }
             }
             for (var j = i+1; j < this.players.length; j++) {
-                var turn = true;
-                var game = new TicTacToe();
+                turn = true;
+                game = new TicTacToe();
                 while (game.state == 'ongoing'){
                     if (turn) {
                         game.move(this.players[i].pass(game.board),'circle');
@@ -125,9 +142,11 @@ class Tournament {
                         break;
                     case 'circle':
                         this.players[i].score++;
+                        if (!miss) this.players[j].score-=misspen;
                         break;
                     case 'cross':
                         this.players[j].score++;
+                        if (!miss) this.players[i].score-=misspen;
                         break;
                 }
             }
@@ -136,7 +155,7 @@ class Tournament {
         
         
     compare (a,b) {
-        return(a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0);
+        return(a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0);
     }
 }
 
@@ -235,7 +254,7 @@ class TicTacToe {
     move(pos,player){
         if (this.board[pos] != 0) {
             this.state = (player=='circle')?'cross' : 'circle';
-            return true;
+            return false;
         }
         var sum;
         if (player== 'circle') {
