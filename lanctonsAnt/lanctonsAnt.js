@@ -13,15 +13,21 @@ var antx;
 var anty;
 var dirx;
 var diry;
-let boxLength = 40;
-var runs = false;
+var instructionFlag;
+let boxLength;
+var runs;
 var steps;
-var instructions = [0, 1,1,1,0]
+var instructions;
 
 function setup() {
     
     createCanvas(600,650);
     // reserve lower 50pix for text
+    instructions = [0, 1];
+    reset();
+}
+function reset() {
+    boxLength = 40;
     rows = (height - 50)/boxLength;
     cols = width/boxLength;
     grid = make2DArray(cols, rows);
@@ -35,22 +41,113 @@ function setup() {
     diry = -1;
     dirx = 0;
     steps = 0;
+    instructionFlag = false;
+    runs = false;
     textSize(32);
+    background(0);
 }
 
 function mousePressed() {
-    if (mouseY < height && mouseY > height - 50 && mouseX < 120 && mouseX > 0) {
-        runs = !runs;
-    }
-    var i = floor(mouseX / boxLength);
-    var j = floor(mouseY / boxLength);
-    if (!runs && i < cols && i >= 0 && j<rows && j >= 0){
-        antx = i;
-        anty = j;
+    if (instructionFlag) {
+        var i = floor(mouseX / 100);
+        var j = floor(mouseY / 100);
+        if (i + 6 * j < instructions.length) {
+            instructions[i + 6 * j] = (instructions[i + 6 * j] + 1) %2;
+        }
+        if (mouseY < height && mouseY > height - 50 && mouseX < 120 && mouseX > 0) {
+            instructions.push(0);
+        }
+        if (mouseY < height && mouseY > height - 50 && mouseX < 200 && mouseX > 120) {
+            instructions.pop();
+        }
+        if (mouseY < height && mouseY > height - 50 && mouseX < width 
+            && mouseX > width-90 && !runs) {
+            instructionFlag = !instructionFlag;
+            redrawGrid();
+        }
+        
+    } else {
+        if (mouseY < height && mouseY > height - 50 && mouseX < 120 && mouseX > 0) {
+            runs = !runs;
+        }
+        if (runs && mouseY < height && mouseY > height - 50 && mouseX < 200 && mouseX > 120) {
+            reset();
+        }
+        if (mouseY < height && mouseY > height - 50 && mouseX < width 
+            && mouseX > width-170 && !runs) {
+            instructionFlag = !instructionFlag;
+        }
+        var i = floor(mouseX / boxLength);
+        var j = floor(mouseY / boxLength);
+        if (!runs && i < cols && i >= 0 && j<rows && j >= 0){
+            antx = i;
+            anty = j;
+        }
     }
 }
 
 function draw() {
+    if (instructionFlag) {
+        background(0);
+        fill(255);
+        rect(0, height - 50, width, 50);
+        for (var k = 0; k < instructions.length; k++) {
+            i = k % 6
+            t = (k - i) / 6;
+            fill(255 * k/(instructions.length - 1));
+            rect(i * 100, t *100 ,100, 100);
+            fill(255 * (1-floor(2*k/(instructions.length-1))));
+            push();
+            textSize(64);
+            if (instructions[k]) {
+                text("L", 30 + i * 100, 70 + t * 100);
+            } else {
+                text("R", 30 + i * 100, 70 + t * 100);
+            }
+            pop();
+            fill(0);
+            text("Add", 20, height - 10);
+            text("Delete", 120, height - 10);
+            text("Enter", width-90, height - 10);
+        }
+        return 0;
+    }
+    fill(255);
+    rect(0, height - 50, width, 50);
+    if (runs) {
+        steps += 1;
+        antStep();
+        fill(0);
+        text("Stop", 20, height - 10)
+        text("Reset", 120, height - 10)
+        if (boxLength > 7) {
+            noStroke();
+            fill(255,0,0);
+            rect((antx+0.3)*boxLength,(anty+0.3)*boxLength ,0.3*boxLength, 0.3*boxLength);
+        }
+    } else {
+        fill(0);
+        text("Start", 20, height - 10);
+        text("Steps: "+steps, 120, height - 10);
+        text("Instructions", width-170, height - 10);
+    }
+}
+
+function antStep() {
+    go(instructions[grid[antx][anty]]);
+    grid[antx][anty] = (grid[antx][anty] + 1) % instructions.length;
+    // draw changed tile
+    fill(255 * grid[antx][anty]/(instructions.length - 1));
+    rect(antx*boxLength ,anty*boxLength ,boxLength, boxLength);
+    antx += dirx;
+    anty += diry;
+    if (antx < 0 || anty < 0 || antx > cols - 1 || anty > rows - 1) {
+        refineGrid();
+        redrawGrid();
+    }
+}
+
+function redrawGrid() {
     background(0);
     for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
@@ -59,45 +156,6 @@ function draw() {
                 rect(i*boxLength ,j*boxLength ,boxLength, boxLength);
             }
         }
-    }
-    if (boxLength > 15) {
-        noStroke();
-        fill(255,0,0);
-        rect((antx+0.3)*boxLength,(anty+0.3)*boxLength ,0.3*boxLength, 0.3*boxLength);
-    }
-    fill(255);
-    rect(0, height - 50, width, 50);
-    fill(0);
-    if (runs) {
-        steps += 1;
-        antStep();
-        text("Stop", 20, height - 10)
-    } else {
-        text("Start", 20, height - 10)
-        for (var k = 0; k < instructions.length; k++) {
-            i = k % 6
-            // todo: when more than 6 make more than one row of exampletiles
-            t = ceil(instructions.length / 6) - floor(k/6) - 1;
-            fill(255 * k/(instructions.length - 1));
-            rect(300 + i * 50, height - 50 - t *50 ,50, 50);
-            fill(255 * (1-floor(2*k/(instructions.length-1))));
-            if (instructions[k]) {
-                text("L", 315 + i * 50, height - 10 - t *50);
-            } else {
-                text("R", 315 + i * 50, height - 10 - t *50);
-            }
-        }
-        text("Steps: "+steps, 120, height - 10)
-    }
-}
-
-function antStep() {
-    go(instructions[grid[antx][anty]]);
-    grid[antx][anty] = (grid[antx][anty] + 1) % instructions.length;
-    antx += dirx;
-    anty += diry;
-    if (antx < 0 || anty < 0 || antx > cols - 1 || anty > rows - 1) {
-        refineGrid();
     }
 }
 

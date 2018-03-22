@@ -6,6 +6,7 @@ var boxlength;
 var button1;
 var button2;
 var Particles = [];
+var h;
 
 function setup() {
     createCanvas(650,650, WEBGL);
@@ -24,6 +25,7 @@ function setup() {
     slider2.style('width','600px');
     t = 0.1;
     boxlength = 200;
+    h = 25;
 }
 
 function createParticle() {
@@ -83,7 +85,7 @@ class Particle {
     findNeigbors() {
         var findings = [];
         for (var num in Particles) {
-            if (this.dist(Particles[num]) < 50) {
+            if (this.dist(Particles[num]) < 2*h) {
                 if (Particles[num] != this) {
                     findings.push(Particles[num]);
                 }
