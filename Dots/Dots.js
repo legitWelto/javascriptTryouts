@@ -15,23 +15,35 @@ var trys;
 var guessAngle;
 var guessRadius;
 var maxTries;
+var data;
+var num;
 
 // only works on omnibus server because of coars
+// loadJSON only works on omnibus
 // gif supports .pause() .play()
+function preload() {
+  data = loadJSON('data.json');
+}
 
 function setup() {
-  createCanvas(400,400);
-  gif = loadGif('acc/earth.gif');
+  createCanvas(800,400);
   inp = createInput('');
   inp.position(0 , height + 10);
-  butt = createButton('submit');
+  butt = createButton('submit your guess');
   butt.position(200, height+10);
   butt.mousePressed(submitGuess);
-  trys = 0;
+  setGif();
 }
 
 function draw() {
   image(gif, 0, 0);
+}
+
+function setGif() {
+  trys = 0;
+  num = ceil(random(0.00001, Object.keys(data).length));
+  console.log(num);
+  gif = loadGif(data[num].gif);
 }
 
 function submitGuess() {
@@ -53,4 +65,7 @@ function submitGuess() {
     console.log('your guessed angle: ',  guessAngle);
     console.log('your guessed radius: ',  guessRadius);
   }
+
+  console.log(data[num].radius);
+  console.log(data[num].angle);
 }
