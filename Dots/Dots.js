@@ -10,13 +10,17 @@
 
 var gif;
 var butt;
+var renew;
 var inp;
 var trys;
 var guessAngle;
 var guessRadius;
+var radiusTolerance;
+var angleTolerance;
 var maxTries;
 var data;
 var num;
+var solved;
 
 // only works on omnibus server because of coars
 // loadJSON only works on omnibus
@@ -32,7 +36,13 @@ function setup() {
   butt = createButton('submit your guess');
   butt.position(200, height+10);
   butt.mousePressed(submitGuess);
+  renew = createButton('new riddle');
+  renew.position(320, height+10);
+  renew.mousePressed(setGif);
   setGif();
+  radiusTolerance = 0.05;
+  angleTolerance = 0.05;
+  maxTries = 2;
 }
 
 function draw() {
@@ -41,14 +51,15 @@ function draw() {
 
 function setGif() {
   trys = 0;
+  solved = false;
   num = ceil(random(0.00001, Object.keys(data).length));
   console.log(num);
   gif = loadGif(data[num].gif);
 }
 
 function submitGuess() {
+  if (solved) { return 0;}
   guess = inp.value();
-  gif.pause();
   console.log('your Guess: ',guess);
   if (guess.length > 3 || guess.length < 2) {
     console.log('your Guess has invalid length');
@@ -66,6 +77,41 @@ function submitGuess() {
     console.log('your guessed radius: ',  guessRadius);
   }
 
-  console.log(data[num].radius);
-  console.log(data[num].angle);
+  var solution = true;
+  if (abs(guessAngle - data[num].angle/30)%12 > 0.5 + angleTolerance) {
+    solution = false;
+  }
+  switch (guessRadius) {
+    case 'a':
+      if (data[num].radius < 0.6 - radiusTolerance) {
+        solution = false;
+      }
+      break;
+    case 'b':
+      if (data[num].radius > 0.6 + radiusTolerance || data[num].radius < 0.3 - radiusTolerance) {
+        solution = false;
+      }
+      break;
+    case 'c':
+      if (data[num].radius > 0.3 + radiusTolerance) {
+        solution = false;
+      }
+      break;
+    default:
+      // letter doesnt applies to rules
+      console.log('your guessed radius has to be in a-c');
+      solution = false;
+  }
+  if (solution) {
+    console.log('you guessed right');
+    gif = loadImage(data[num].img);
+    solved = true;
+    return 0;
+  }
+  trys += 1;
+  if (trys == maxTries) {
+    console.log('you ran out of tryes');
+    gif = loadImage(data[num].img);
+    solved = true;
+  }
 }
