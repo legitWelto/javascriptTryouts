@@ -30,19 +30,21 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800,400);
+  createCanvas(800,500);
   inp = createInput('');
-  inp.position(0 , height + 10);
+  inp.position(0 , height - 90);
   butt = createButton('submit your guess');
-  butt.position(200, height+10);
+  butt.position(200, height- 90);
   butt.mousePressed(submitGuess);
   renew = createButton('new riddle');
-  renew.position(320, height+10);
+  renew.position(340, height - 90);
   renew.mousePressed(setGif);
-  setGif();
   radiusTolerance = 0.05;
   angleTolerance = 0.05;
-  maxTries = 2;
+  maxTries = 3;
+  textSize(25);
+  noStroke();
+  setGif();
 }
 
 function draw() {
@@ -55,6 +57,11 @@ function setGif() {
   num = ceil(random(0.00001, Object.keys(data).length));
   console.log(num);
   gif = loadGif(data[num].gif);
+  fill(255);
+  rect(430, height - 100, 370, 50);
+  fill(0);
+  console.log(maxTries + " " + trys);
+  text(maxTries - trys + " tries left",  430, height- 60);
 }
 
 function submitGuess() {
@@ -102,16 +109,23 @@ function submitGuess() {
       console.log('your guessed radius has to be in a-c');
       solution = false;
   }
+  fill(255);
+  rect(430, height - 100, 370, 50);
+  fill(0);
   if (solution) {
     console.log('you guessed right');
     gif = loadImage(data[num].img);
     solved = true;
+    text('you guessed right', 430, height - 60);
     return 0;
   }
   trys += 1;
   if (trys == maxTries) {
-    console.log('you ran out of tryes');
+    console.log('you ran out of tries');
     gif = loadImage(data[num].img);
     solved = true;
+    text('you ran out of tries',  430, height - 60);
+    return 0;
   }
+  text(maxTries - trys + " tries left",  430, height -60);
 }
