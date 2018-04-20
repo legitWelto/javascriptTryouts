@@ -107,7 +107,6 @@ class TicTacToe {
                 return true;
         }
         this.state = 'ongoing';
-        
         return true;
     }
 }

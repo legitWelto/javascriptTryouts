@@ -1,22 +1,24 @@
 class Tournament {
     constructor() {
-        this.players = new Array(300);
+        this.total_num_players = 100;
+        this.players = new Array(this.total_num_players);
         for (var i = 0; i < this.players.length; i++) {
-            this.players[i] = new NeuralNet(3);
+            this.players[i] = new NeuralNet(1);
             this.players[i].randomize();
         }
     }
     
     roundrobin(){
-        this.drawTopMatches();
         this.getScore();
         this.players.sort(this.compare);
-        var newPlayers = new Array(this.players.length);
-        text("Score",400, 50)
-        text("player #0: " + this.players[0].score, 400, 100);
-        text("player #1: " +this.players[1].score, 400, 150);
-        text("player #2: " + this.players[2].score, 400, 200);
-        for (var i = 0; i < this.players.length/6; i++) {
+        if (count%1 == 0) {
+            this.drawTopMatches();
+            text("Score",400, 50)
+            text("player #0: " + this.players[0].score, 400, 100);
+            text("player #1: " +this.players[1].score, 400, 150);
+            text("player #2: " + this.players[2].score, 400, 200);
+        }
+        /*for (var i = 0; i < this.players.length/6; i++) {
             // todo change param with score
             newPlayers[6*i] = this.players[i].mutate(0,0);
             newPlayers[6*i+1] = this.players[i].mutate(0.5,0.5);
@@ -27,6 +29,35 @@ class Tournament {
             newPlayers[6*i+5].randomize();
         }
         this.players = newPlayers;
+        */
+        var total = 0;
+        for (var i = 0; i < this.players.length; i++) total += this.players[i].score;
+        while (true) {
+            if (this.players[this.players.length - 1].score > 1.1*total/this.total_num_players) break;
+            this.players.pop();
+            if (this.players.length == 0) {
+                this.players = new Array(this.total_num_players);
+                for (var i = 0; i < this.total_num_players; i++) {
+                    this.players[i] = new NeuralNet(1);
+                    this.players[i].randomize();
+                }
+                console.log("ree");
+                return;
+            }
+        }
+        var surviving = this.players.length;
+        var newPlayers = new Array(this.total_num_players);
+        for (var i = 0; i < surviving; i++) {
+            this.players[i].score = 0;
+            newPlayers[i] = this.players[i];
+        }
+        for (var i = surviving; i < this.total_num_players; i++) {
+            newPlayers[i] = this.players[floor(Math.random() * surviving)].mutate(Math.random() * 0.5, Math.random() * 0.5);
+        }
+        this.players = newPlayers;
+        if (count%10 == 0) {
+            console.log(surviving);
+        }
     }
 
     drawTopMatches(){
@@ -70,7 +101,7 @@ class Tournament {
 
     getScore() {
         var turn,miss,game;
-        var misspen = 2;
+        var misspen = 0.5;
         for (var i = 0; i < this.players.length; i++) {
             for (var j = 0; j < i; j++) {
                 turn = true;
@@ -78,27 +109,31 @@ class Tournament {
                 while (game.state == 'ongoing'){
                     if (turn) {
                         miss = game.move(this.players[i].pass(game.board),'circle');
+                        if (miss) this.players[i].score+=1;
+                        else this.players[i].score-=1;
                     } else {
                         miss = game.move(this.players[j].pass(game.board),'cross');
-                    }
+                        if (miss) this.players[j].score+=1;
+                        else this.players[j].score-=1;
+                    } 
                     turn = !turn;
                 }
-                switch(game.state){
+                /*switch(game.state){
                     case 'draw':
                         this.players[i].score += 0.5;
                         this.players[j].score += 0.5;
                         break;
                     case 'circle':
-                        this.players[i].score++;
+                        //this.players[i].score++;
                         // hitting already used field
                         if (!miss) this.players[j].score-=misspen;
                         break;
                     case 'cross':
-                        this.players[j].score++;
+                        //this.players[j].score++;
                         // hitting already used field
                         if (!miss) this.players[i].score-=misspen;
                         break;
-                }
+                }*/
             }
             for (var j = i+1; j < this.players.length; j++) {
                 turn = true;
@@ -128,6 +163,7 @@ class Tournament {
             }
         }
     }
+
     compare (a,b) {
         return(a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0);
     }

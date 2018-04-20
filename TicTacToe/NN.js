@@ -14,7 +14,7 @@ class NeuralNet {
         for (var i = 0; i < this.matrix.length; i++) {
             for (var j = 0; j < 9; j++) {
                 for (var k = 0; k < 10; k++) {
-                this.matrix[i][j][k] = Math.random()*2-1;
+                this.matrix[i][j][k] = randn_bm();
                 }
             }
         }
@@ -28,7 +28,8 @@ class NeuralNet {
             for (var j = 0; j < 9; j++) {
                 for (var k = 0; k < 10; k++) {
                     if  (many > Math.random) {
-                        newNet.matrix[i][j][k] = (1-much)*this.matrix[i][j][k] + much * (Math.random()*2-1);
+                        newNet.matrix[i][j][k] = (1-much)*this.matrix[i][j][k] + much * randn_bm();
+                        console.log(randn_bm());
                     } else {
                         newNet.matrix[i][j][k] = this.matrix[i][j][k];
                     }
@@ -63,4 +64,12 @@ class NeuralNet {
     }
 
     // todo save load...
+}
+
+// gaussian with E=0 and V=1
+function randn_bm() {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }

@@ -60,7 +60,6 @@ function eva(){
 
 function mousePressed() {
     if (test && !runs) {
-        console.log(mouseX + "  " + mouseY);
         if (mouseX > 400 || mouseY >400) { return;}
         var i = floor(3*mouseX / showbox);
         var j = floor(3*mouseY / showbox);
