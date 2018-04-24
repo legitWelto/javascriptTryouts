@@ -17,11 +17,12 @@ class Player {
             extendedboard[2*i] = (board[i] == 1)?1:0;
             extendedboard[2*i + 1] = (board[i] == -1)?1:0;
         }
-        board = this.brain.pass(extendedboard);
+        var out = this.brain.pass(extendedboard);
         //get pos with maximum
-        var pos = 0;
-        for (var j = 1; j < 9; j++) {
-             if (board[j] > board[pos]) pos = j;
+        out.push(-1);
+        var pos = 9;
+        for (var j = 0; j < 9; j++) {
+             if (out[j] > out[pos] && board[j] == 0) pos = j;
         }
         return pos;
     }

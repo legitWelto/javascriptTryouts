@@ -1,6 +1,6 @@
 class Tournament {
     constructor() {
-        this.total_num_players = 20;
+        this.total_num_players = 300;
         this.dimensions = [18,3,9];
         this.cross = new Array(this.total_num_players);
         this.circle = new Array(this.total_num_players);
@@ -17,7 +17,7 @@ class Tournament {
         this.circle.sort(this.compare);
         this.cross.sort(this.compare);
         count++;
-        if (count%10 == 0) {
+        if (count%1 == 0) {
             this.drawTopMatches();
             text("Score",400, 50)
             text("Cross #0: " + this.cross[0].score, 400, 100);
@@ -126,19 +126,16 @@ class Tournament {
     }
 
     getScore() {
-        var turn, game, miss;
-        var misspen = 10;
+        var turn, game;
         for (var i = 0; i < this.circle.length; i++) {
             for (var j = 0; j < this.cross.length; j++) {
                 turn = true;
                 game = new TicTacToe();
                 while (game.state == 'ongoing'){
                     if (turn) {
-                        miss = game.move(this.circle[i].evaluate(game.board),'circle');
-                        if (miss) {this.circle[i].score+=1;}
+                        game.move(this.circle[i].evaluate(game.board),'circle');
                     } else {
-                        miss = game.move(this.cross[j].evaluate(game.board),'cross');
-                        if (miss) {this.cross[j].score+=1;}
+                        game.move(this.cross[j].evaluate(game.board),'cross');
                     } 
                     turn = !turn;
                 }
@@ -149,13 +146,9 @@ class Tournament {
                         break;
                     case 'circle':
                         this.circle[i].score += 10;
-                        // hitting already used field
-                        if (!miss) this.cross[j].score-=misspen;
                         break;
                     case 'cross':
                         this.cross[j].score += 10;
-                        // hitting already used field
-                        if (!miss) this.circle[i].score-=misspen;
                         break;
                 }
             }

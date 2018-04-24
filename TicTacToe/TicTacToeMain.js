@@ -42,6 +42,7 @@ function test(){
     test = true;
     showbox = 400;
     gam = new TicTacToe;
+    background(255);
     gam.show(0,0);
     turnMain = 0;
 }
@@ -54,6 +55,19 @@ function eva(){
             move_happend = gam.move(tournament.cross[0].evaluate(gam.board),'cross');
         }
         if (move_happend) {turnMain+=1;}
+        background(255);
+        gam.show(0,0);
+        switch (gam.state){
+            case 'draw':
+                text("Draw",0,showbox*0.5);
+                break;
+            case 'circle':
+                text("Circle won",0,showbox*0.5);
+                break;
+            case 'cross':
+                text("Cross won", 0,showbox*0.5);
+                break;
+        }
     }
 }
 
@@ -71,6 +85,19 @@ function mousePressed() {
             gam.board[3*i+j] = -1;
         }
         turnMain += 1;
+        background(255);
+        gam.show(0,0);
+        switch (gam.state){
+            case 'draw':
+                text("Draw",0,showbox*0.5);
+                break;
+            case 'circle':
+                text("Circle won",0,showbox*0.5);
+                break;
+            case 'cross':
+                text("Cross won", 0,showbox*0.5);
+                break;
+        }
     }
 }
 
@@ -78,8 +105,5 @@ function draw(){
     if (runs){
         showbox =200;
         tournament.roundrobin();
-    } else if (test) {
-        background(255);
-        gam.show(0,0);
     }
 }
