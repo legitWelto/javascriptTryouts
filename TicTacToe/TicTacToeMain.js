@@ -80,9 +80,9 @@ function mousePressed() {
             return;
         }
         if (turnMain % 2 == 0) {
-            gam.board[3*i+j] = 1;
+            gam.move(3*i+j,'circle')
         } else {
-            gam.board[3*i+j] = -1;
+            gam.move(3*i+j,'cross')
         }
         turnMain += 1;
         background(255);

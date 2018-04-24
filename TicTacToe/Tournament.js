@@ -1,6 +1,6 @@
 class Tournament {
     constructor() {
-        this.total_num_players = 300;
+        this.total_num_players = 100;
         this.dimensions = [18,3,9];
         this.cross = new Array(this.total_num_players);
         this.circle = new Array(this.total_num_players);

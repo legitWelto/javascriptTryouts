@@ -43,12 +43,14 @@ class TicTacToe {
                 if (this.board[0] + this.board[1] + this.board[2] == sum ||
                     this.board[0] + this.board[3] + this.board[6] == sum ||
                     this.board[0] + this.board[4] + this.board[8] == sum){
+                        this.state = player;
                         return true;
                     }
                     break;
             case 1:
                 if (this.board[0] + this.board[1] + this.board[2] == sum ||
                     this.board[1] + this.board[4] + this.board[7] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
@@ -56,12 +58,14 @@ class TicTacToe {
                 if (this.board[0] + this.board[1] + this.board[2] == sum ||
                     this.board[2] + this.board[4] + this.board[6] == sum ||
                     this.board[2] + this.board[5] + this.board[8] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
             case 3:
                 if (this.board[0] + this.board[3] + this.board[6] == sum ||
                     this.board[3] + this.board[4] + this.board[5] == sum){
+                        this.state = player;
                         return true;
                     }
                     break;
@@ -70,12 +74,14 @@ class TicTacToe {
                     this.board[1] + this.board[4] + this.board[7] == sum ||
                     this.board[2] + this.board[4] + this.board[6] == sum ||
                     this.board[3] + this.board[4] + this.board[5] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
             case 5:
                 if (this.board[3] + this.board[4] + this.board[5] == sum ||
                     this.board[2] + this.board[5] + this.board[8] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
@@ -83,12 +89,14 @@ class TicTacToe {
                 if (this.board[0] + this.board[3] + this.board[6] == sum ||
                     this.board[2] + this.board[4] + this.board[6] == sum ||
                     this.board[6] + this.board[7] + this.board[8] == sum){
+                        this.state = player;
                         return true;
                     }
                     break;
             case 7:
                 if (this.board[1] + this.board[4] + this.board[7] == sum ||
                     this.board[8] + this.board[6] + this.board[7] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
@@ -96,6 +104,7 @@ class TicTacToe {
                 if (this.board[2] + this.board[5] + this.board[8] == sum ||
                     this.board[0] + this.board[4] + this.board[8] == sum ||
                     this.board[2] + this.board[5] + this.board[8] == sum ){
+                        this.state = player;
                         return true;
                     }
                     break;
