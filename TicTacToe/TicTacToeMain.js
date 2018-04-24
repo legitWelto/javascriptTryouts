@@ -43,18 +43,17 @@ function test(){
     showbox = 400;
     gam = new TicTacToe;
     gam.show(0,0);
-    turn = 0;
+    turnMain = 0;
 }
 
 function eva(){
     if (test && !runs){
-        
-        if (turn % 2 == 0) {
-            move_happend = gam.move(tournament.players[0].pass(gam.board),'circle');
+        if (turnMain % 2 == 0) {
+            move_happend = gam.move(tournament.circle[0].evaluate(gam.board),'circle');
         } else {
-            move_happend = gam.move(tournament.players[0].pass(gam.board),'cross');
+            move_happend = gam.move(tournament.cross[0].evaluate(gam.board),'cross');
         }
-        if (move_happend) {turn+=1;}
+        if (move_happend) {turnMain+=1;}
     }
 }
 
@@ -66,12 +65,12 @@ function mousePressed() {
         if (gam.board[3*i+j] != 0) {
             return;
         }
-        if (turn % 2 == 0) {
+        if (turnMain % 2 == 0) {
             gam.board[3*i+j] = 1;
         } else {
             gam.board[3*i+j] = -1;
         }
-        turn += 1;
+        turnMain += 1;
     }
 }
 

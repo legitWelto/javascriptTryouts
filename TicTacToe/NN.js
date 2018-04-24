@@ -1,19 +1,22 @@
 class NeuralNet {
-    constructor(hiddenlayers){
-        this.matrix = new Array(hiddenlayers);
+    constructor(dimensions){
+        // dimensions array of number of nodes per layer dimensions[0] input
+        this.dimensions = dimensions;
+        this.matrix = new Array(dimensions.length - 1);
         for (var i = 0; i < this.matrix.length; i++) {
-            this.matrix[i] = new Array(9);
-            for (var j = 0; j < 9; j++) {
-                this.matrix[i][j] = new Array(10);
+            // output has dimension of nextlayer
+            this.matrix[i] = new Array(dimensions[i+1]);
+            for (var j = 0; j < dimensions[i+1]; j++) {
+                // input this layer + constant
+                this.matrix[i][j] = new Array(dimensions[i] + 1);
             }
         }
-        this.score = 0;
     }
 
     randomize(){
         for (var i = 0; i < this.matrix.length; i++) {
-            for (var j = 0; j < 9; j++) {
-                for (var k = 0; k < 10; k++) {
+            for (var j = 0; j < this.matrix[i].length; j++) {
+                for (var k = 0; k < this.matrix[i][j].length; k++) {
                 this.matrix[i][j][k] = randn_bm();
                 }
             }
@@ -23,13 +26,12 @@ class NeuralNet {
     mutate(many , much) {
         // many = 1 means all random many= 0 none
         // much = 1 completely new entry much =0 same entry as before
-        var newNet = new NeuralNet(this.matrix.length);
+        var newNet = new NeuralNet(this.dimensions);
         for (var i = 0; i < this.matrix.length; i++) {
-            for (var j = 0; j < 9; j++) {
-                for (var k = 0; k < 10; k++) {
-                    if  (many > Math.random) {
-                        newNet.matrix[i][j][k] = (1-much)*this.matrix[i][j][k] + much * randn_bm();
-                        console.log(randn_bm());
+            for (var j = 0; j < this.matrix[i].length; j++) {
+                for (var k = 0; k < this.matrix[i][j].length; k++) {
+                    if  (many > Math.random()) {
+                        newNet.matrix[i][j][k] = this.matrix[i][j][k] + much * randn_bm();
                     } else {
                         newNet.matrix[i][j][k] = this.matrix[i][j][k];
                     }
@@ -39,28 +41,24 @@ class NeuralNet {
         return newNet;
     }
 
-    pass(board){
-        var tempNodes = new Array(9);
+    pass(input) {
+        var tempNodes;
         for (var i = 0; i < this.matrix.length; i++) {
-            for (var j = 0; j < 9; j++) {
+            tempNodes = Array(this.dimensions[i+1]);
+            for (var j = 0; j < this.matrix[i].length; j++) {
                 // const factor
-                tempNodes[j] = this.matrix[i][j][9];
-                for (var k = 0; k < 9; k++) {
-                    tempNodes[j] += this.matrix[i][j][k]*board[k];
+                tempNodes[j] = this.matrix[i][j][this.matrix[i][j].length - 1];
+                for (var k = 0; k < this.matrix[i][j].length - 1; k++) {
+                    tempNodes[j] += this.matrix[i][j][k]*input[k];
                 }
             }
             for (var j = 0; j < 9; j++) {
-                // activation
+                // activation; relu
                 tempNodes[j] = (tempNodes[j] > 0) ? tempNodes[j] : 0;
             }
-            board = tempNodes;
+            input = tempNodes;
         }
-        //get pos with maximum
-        var pos = 0;
-        for (var j = 1; j < 9; j++) {
-             if (board[j] > board[pos]) pos = j;
-        }
-        return pos;
+        return tempNodes;
     }
 
     // todo save load...
