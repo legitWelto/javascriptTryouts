@@ -103,7 +103,7 @@ class TicTacToe {
             case 8:
                 if (this.board[2] + this.board[5] + this.board[8] == sum ||
                     this.board[0] + this.board[4] + this.board[8] == sum ||
-                    this.board[2] + this.board[5] + this.board[8] == sum ){
+                    this.board[6] + this.board[7] + this.board[8] == sum ){
                         this.state = player;
                         return true;
                     }

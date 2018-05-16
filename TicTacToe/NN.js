@@ -13,11 +13,22 @@ class NeuralNet {
         }
     }
 
+    regualize() {
+        for (var i = 0; i < this.matrix.length; i++) {
+            for (var j = 0; j < this.matrix[i].length; j++) {
+                for (var k = 0; k < this.matrix[i][j].length; k++) {
+                    if( this.matrix[i][j][k] < -1) this.matrix[i][j][k] = -1;
+                    else if (this.matrix[i][j][k] > 1) this.matrix[i][j][k] = -1;
+                }
+            }
+        }
+    }
+
     randomize(){
         for (var i = 0; i < this.matrix.length; i++) {
             for (var j = 0; j < this.matrix[i].length; j++) {
                 for (var k = 0; k < this.matrix[i][j].length; k++) {
-                this.matrix[i][j][k] = randn_bm();
+                this.matrix[i][j][k] = Math.random() * 2 - 1;
                 }
             }
         }

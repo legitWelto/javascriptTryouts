@@ -12,6 +12,7 @@ var runs;
 var gam;
 var turn;
 var move_happend;
+var p;
 
 
 function setup(){
@@ -19,16 +20,17 @@ function setup(){
     showbox = 200;
     textSize(32);
     tournament = new Tournament();
-    but = createButton("naechste Runde");
+    but = createButton("trainAI");
     but.position(0,450);
     but.mousePressed(next);
-    but2 = createButton("Test");
+    but2 = createButton("perfectPlayer");
     but2.position(200,450);
     but2.mousePressed(test);
     but3 = createButton("evaluate");
     but3.position(300,450);
     but3.mousePressed(eva);
     count = 0;
+    p = new classicPlayer();
     runs = false;
     test = false;
 }
@@ -50,9 +52,9 @@ function test(){
 function eva(){
     if (test && !runs){
         if (turnMain % 2 == 0) {
-            move_happend = gam.move(tournament.circle[0].evaluate(gam.board),'circle');
+            move_happend = gam.move(p.evaluate(gam.board,'circle'),'circle');
         } else {
-            move_happend = gam.move(tournament.cross[0].evaluate(gam.board),'cross');
+            move_happend = gam.move(p.evaluate(gam.board,'cross'),'cross');
         }
         if (move_happend) {turnMain+=1;}
         background(255);
