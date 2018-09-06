@@ -51,16 +51,17 @@ class classicPlayer {
         }
         // try moves
         for (var i = 0; i < board.length; i++){
-            if(board[i] !=0) continue;
-            board[i] = (player =='circle') ? 1 : -1;
-            var temp = this.min_value(board,alpha,beta,newplayer, a)[0]
-            if (temp > v) {
-                v = temp;
-                pos = i;
+            if(board[i] ==0) {
+                board[i] = (player =='circle') ? 1 : -1;
+                var temp = this.min_value(board,alpha,beta,newplayer, a)[0]
+                if (temp > v) {
+                    v = temp;
+                    pos = i;
+                }
+                board[i] = 0;
+                if (v >= beta) return [v,pos];
+                alpha = max(alpha,v);
             }
-            board[i] = 0;
-            if (v >= beta) return [v,pos];
-            alpha = max(alpha,v);
         }
         return[v,pos]
     }
@@ -78,16 +79,17 @@ class classicPlayer {
         }
         // try moves
         for (var i = 0; i < board.length; i++){
-            if(board[i] !=0) continue;
-            board[i] = (player =='circle') ? 1 : -1;
-            var temp = this.max_value(board,alpha,beta,newplayer, a)[0];
-            if (temp < v) {
-                v = temp;
-                pos = i;
+            if(board[i] ==0) {
+                board[i] = (player =='circle') ? 1 : -1;
+                var temp = this.max_value(board,alpha,beta,newplayer, a)[0];
+                if (temp < v) {
+                    v = temp;
+                    pos = i;
+                }
+                board[i] = 0;
+                if (v <= alpha) return [v,pos];
+                beta = min(beta,v);
             }
-            board[i] = 0;
-            if (v <= alpha) return [v,pos];
-            beta = min(beta,v);
         }
         return[v,pos]
     }
