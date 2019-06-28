@@ -5,7 +5,7 @@ var id;
 function setup() {
     createCanvas(1000,500);
     background(255);
-    socket = io.connect('http://localhost:3000');
+    socket = io.connect('https://localhost:8080');
     input = createInput();
     
     input.position(50, 50);
