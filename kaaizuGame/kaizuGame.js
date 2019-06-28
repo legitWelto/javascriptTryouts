@@ -17,44 +17,39 @@ var numbers = ["hundred", "million", "billion", "thousand", "trillion", "kaaizil
 var num_to_str = ["zero","one","two","three","four","five","six","seven","eight","nine"]
 var num_seq;
 var vid;
-// only works on omnibus server
-function preload() {
-    pumpkin_pic = loadImage('./pics/pumpkin.png');
-    kaaizu = loadImage('./pics/kaaizu.png');
-    vid = createVideo(['./pics/Intro.mov']);
-    vid.hide();
-    vid.pause();
-}
+var squish;
+var fallin;
+var started;
 
+// only works on omnibus server
 function setup() {
     cnv = createCanvas(800,900);
     cnv.mouseClicked(restart);
+    cnv.mouseClicked(start);
     increment = 0;
     base_speed = 2;
     pumpkin_size = 50;
     minisize= pumpkin_size/2;
     lives = 20;
-    gameover = false;
+    gameover = true;
     points = 0;
     num_seq = [];
     fill(0,0,0);
     textSize(34);
     textAlign(CENTER);
-    vid.position(-200,-180);
-    vid.onended(vid.hide);
-    vid.size(1100);
 }
 
 function draw() {
     background(255);
     if(!gameover) {
         increment++;
+        fallin.setVolume((150 - pumpkins.length)/300);
         draw_pumpkins();
         draw_kaaizu();
         check_collision();
         add_new_pumpkins();
     } else {
-        text("click to restart", width/2,height/2);
+        text("click to start", width/2,height/2);
     }
     
     text("lives: " + lives, 100,50);
@@ -74,6 +69,25 @@ function restart(){
         gameover = false;
     }
 }
+function start(){
+    if(!started){
+        getAudioContext().resume();
+        pumpkin_pic = loadImage('./pics/pumpkin.png');
+        kaaizu = loadImage('./pics/kaaizu.png');
+        squish = loadSound('./pics/introsquish.mp3');
+        fallin = loadSound('./pics/fallinintro.mp3', () => {gameover = false;});
+        squish.playMode('sustain');
+        squish.setVolume(1);
+        fallin.playMode('sustain');
+        vid = createVideo(['./pics/Intro.mov','./pics/Intro.webm' ]);
+        vid.hide();
+        vid.pause();
+        vid.position(-200,-180);
+        vid.onended(vid.hide);
+        vid.size(1100);
+        started = true;
+    }
+}
 
 function check_collision() {
     for(i in pumpkins) {
@@ -88,6 +102,7 @@ function check_collision() {
                 pumpkins_on_kaaizu.push(pumpkins[i][0] - leftX);
                 pumpkins.splice(i,1);
             } else if(pumpkins[i][1] > 750){
+                squish.play();
                 lives -= 1;
                 if (lives == 0){
                     gameover = true;
@@ -102,6 +117,7 @@ function check_collision() {
         }
     }
 }
+
 function draw_pumpkins() {
     for(i in pumpkins){
         //ellipse(pumpkins[i][0], pumpkins[i][1], pumpkin_size, pumpkin_size);
@@ -112,7 +128,10 @@ function draw_pumpkins() {
 
 function add_new_pumpkins() {
     if (Math.random()< spawn_prob(increment, pumpkins.length)){
-        pumpkins.push([getRandomInt(width), 0, max_speed(increment) + base_speed])
+        speed = max_speed(increment) + base_speed;
+        pumpkins.push([getRandomInt(width), 0, speed])
+        fallin.rate(Math.floor(speed)/ (2 * 3.4));
+        fallin.play();
     }
 }
 
@@ -150,7 +169,6 @@ function points_to_text() {
     var letters = 8;
     const temp_num_seq = [...num_seq];
     temp_num_seq.push("");
-    console.log(temp_num_seq);
     for(i in seq) {
         x = seq[seq.length - i - 1];
         var update = num_to_str[x] + "-";
