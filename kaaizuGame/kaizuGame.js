@@ -24,7 +24,6 @@ var started;
 // only works on omnibus server
 function setup() {
     cnv = createCanvas(800,900);
-    cnv.mouseClicked(restart);
     cnv.mouseClicked(start);
     increment = 0;
     base_speed = 2;
@@ -57,18 +56,7 @@ function draw() {
     text(points_to_text(), width/2,80);
     textStyle(NORMAL);
 }
-function restart(){
-    if (gameover) {
-        points = 0;
-        increment = 0;
-        pumpkins = [];
-        pumpkins_on_kaaizu = [];
-        lives = 20;
-        num_seq = [];
-        vid.hide();
-        gameover = false;
-    }
-}
+
 function start(){
     if(!started){
         getAudioContext().resume();
@@ -86,6 +74,17 @@ function start(){
         vid.onended(vid.hide);
         vid.size(1100);
         started = true;
+	return;
+    }
+    if (gameover) {
+        points = 0;
+        increment = 0;
+        pumpkins = [];
+        pumpkins_on_kaaizu = [];
+        lives = 20;
+        num_seq = [];
+        vid.hide();
+        gameover = false;    
     }
 }
 
