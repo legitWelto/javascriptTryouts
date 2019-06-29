@@ -147,6 +147,16 @@ function draw_kaaizu() {
         leftX = mouseX - padLength;
         rightX = mouseX + padLength
     }
+    if(pumpkins_on_kaaizu.length){
+        textSize(40);
+        textStyle(BOLD);
+        textAlign(CENTER,BOTTOM);
+        var a = Math.floor(pumpkins_on_kaaizu.length/ 60);
+        text("G" + ("I".repeat(60) + "-\n").repeat(a) + "I".repeat(pumpkins_on_kaaizu.length % 60) + "D", width/2,700);
+        textAlign(CENTER, TOP);
+        textStyle(NORMAL);
+        textSize(34);
+    }
     for (i in pumpkins_on_kaaizu){
     //ellipse(leftX + pumpkins_on_kaaizu[i], 750 - minisize/2, minisize);
     image(pumpkin_pic, leftX + pumpkins_on_kaaizu[i] - (minisize/2 + 5), 750 - minisize, minisize+ 5 , minisize+ 5);
